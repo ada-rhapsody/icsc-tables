@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Table Embed</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:#fff;color:#0f172a;line-height:1.4;padding:10px;
+}
+.tbl-wrap{margin:0 auto;max-width:100%}
+.tbl-title{font-weight:700;color:#0f172a}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:0;table-layout:auto}
+thead th{padding:9px 8px;font-weight:600;text-align:left;white-space:nowrap}
+thead th.num{text-align:right}
+tbody td{padding:7px 8px;border-bottom:1px solid #cbd5e1;white-space:nowrap;background:#fff}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.total-row td{font-weight:700}
+.loading{text-align:center;color:#94a3b8;padding:40px;font-size:14px}
+</style>
+</head>
+<body>
+<div id="root"><div class="loading">No table configured — <a href="tool.html">open the tool</a> first</div></div>
+<script>
+(function(){
+  var stored = localStorage.getItem('csv-tool-data');
+  if(!stored) return;
+  try {
+    var d = JSON.parse(stored);
+    if(!d.data || !d.headers) return;
+    var headers = d.headers;
+    var rows = d.data.slice(1).filter(function(r){ return r.some(function(c){ return String(c).trim()!==''; }); });
+    var hdrBg = (d.colors&&d.colors.cHdrBg)||'#1e293b';
+    var hdrFg = (d.colors&&d.colors.cHdrFg)||'#f1f5f9';
+    var stripe = (d.colors&&d.colors.cStripe)||'#f0f4ff';
+    var totalBg = (d.colors&&d.colors.cTotal)||'#e2e8f0';
+    var fs = (d.fontSize||12)+'px';
+    var title = d.title||'';
+    var titleSize = (d.titleSize||16)+'px';
+    var titleSp = (d.titleSpacing||8)+'px';
+    var lastRow = d.lastRow||'bold';
+
+    var isNum = function(ci){
+      return rows.length>0 && rows.slice(0,5).every(function(r){
+        var v = String(r[ci]||'').replace(/[,$%\s]/g,'').trim();
+        return v==='' || v==='—' || v==='-' || !isNaN(parseFloat(v));
+      });
+    };
+    function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    var h = '<div class="tbl-wrap">';
+    if(title) h += '<h2 class="tbl-title" style="font-size:'+titleSize+';margin-bottom:'+titleSp+'">'+esc(title)+'</h2>';
+    h += '<div class="tbl-scroll"><table>';
+    h += '<thead><tr>';
+    headers.forEach(function(th,i){
+      h += '<th style="background:'+hdrBg+';color:'+hdrFg+';font-size:'+fs+'"'+(isNum(i)?' class="num"':'')+'>'+esc(th)+'</th>';
+    });
+    h += '</tr></thead><tbody>';
+    rows.forEach(function(row,ri){
+      var isLast = ri===rows.length-1;
+      h += '<tr'+(isLast?' class="total-row"':'')+'>';
+      row.forEach(function(cell,ci){
+        var isNumCol = isNum(ci);
+        h += '<td style="font-size:'+fs+'"'+(isNumCol?' class="num"':'')+'>'+esc(cell==null?'':cell)+'</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</tbody></table></div>';
+    h += '</div>';
+
+    // stripe rows + last row
+    var root = document.getElementById('root');
+    root.innerHTML = h;
+    var trs = root.querySelectorAll('tbody tr');
+    trs.forEach(function(tr,i){
+      if(i%2===1) tr.querySelectorAll('td').forEach(function(td){ td.style.background=stripe; });
+      if(i===trs.length-1){
+        tr.querySelectorAll('td').forEach(function(td){
+          td.style.background=totalBg;
+          if(lastRow==='bold') td.style.fontWeight='700';
+          else if(lastRow==='normal') td.style.fontWeight='400';
+        });
+      }
+    });
+  } catch(e){ document.getElementById('root').innerHTML = '<div class="loading">Error loading table</div>'; }
+})();
+</script>
+</body>
+</html>

@@ -284,7 +284,7 @@ function renderTable(headers, rows){
   h += '<div class="row-count">'+rows.length+' rows × '+headers.length+' columns</div>';
   h += '<div class="embed-box">';
   h += '<strong>Embed code</strong> — paste this into your page:<br>';
-  const embedUrl = location.origin + location.pathname + '?embed';
+  const embedUrl = location.origin + location.pathname.replace(/tool\.html$/, 'embed.html');
   h += '<code id="embedCode">&lt;iframe src="'+embedUrl+'" width="100%" height="500" style="border:0"&gt;&lt;/iframe&gt;</code>';
   h += ' <button class="btn" onclick="copyEmbed()">Copy</button><span class="copied" id="copiedMsg">Copied!</span>';
   h += '</div></div>';
