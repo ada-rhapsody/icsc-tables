@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CSV → Responsive Table Embed Tool</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr-bg:#1e293b; --hdr-fg:#f1f5f9; --stripe:#f0f4ff;
+  --line:#cbd5e1; --total-bg:#e2e8f0; --accent:#2563eb;
+  --ink:#0f172a; --soft:#475569; --faint:#64748b;
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font);color:var(--ink);background:#f1f5f9;min-height:100vh}
+
+/* header */
+.topbar{background:var(--hdr-bg);color:var(--hdr-fg);padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topbar h1{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.topbar .ver{font-size:11px;color:#94a3b8}
+
+/* layout */
+.main{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:calc(100vh - 60px)}
+@media(max-width:800px){.main{grid-template-columns:1fr}}
+
+/* panel */
+.panel{background:#fff;border-right:1px solid var(--line);padding:16px;overflow-y:auto}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin:16px 0 6px}
+.panel h3:first-child{margin-top:0}
+.panel label{display:block;font-size:11px;font-weight:600;color:var(--soft);margin:10px 0 4px}
+.panel input[type=color]{width:100%;height:36px;border:1px solid var(--line);padding:2px;cursor:pointer;background:#fff}
+.panel input[type=range]{width:100%}
+.panel select{width:100%;padding:6px 8px;font:12px var(--font);border:1px solid var(--line);background:#fff}
+
+/* file area */
+.drop-zone{border:2px dashed var(--line);padding:28px 16px;text-align:center;color:var(--faint);font-size:13px;cursor:pointer;transition:background .15s}
+.drop-zone:hover,.drop-zone.drag{background:var(--stripe);border-color:var(--accent)}
+.drop-zone input{display:none}
+.drop-zone .icon{font-size:28px;display:block;margin-bottom:6px}
+.drop-zone.has-file{border-style:solid;border-color:var(--accent);background:var(--stripe);color:var(--ink);font-size:12px}
+
+.btn{display:block;width:100%;padding:10px;font:600 12px var(--font);border:0;background:var(--accent);color:#fff;cursor:pointer;text-align:center;margin-top:10px}
+.btn:hover{opacity:.9}
+.btn.sec{background:var(--line);color:var(--ink)}
+
+/* preview area */
+.preview{padding:20px;overflow-y:auto}
+.empty{text-align:center;color:var(--faint);padding:80px 20px;font-size:14px}
+.empty .big-icon{font-size:48px;display:block;margin-bottom:12px}
+
+/* table styles — driven by CSS vars so panel can override */
+#outlet{--hdr-bg:var(--hdr-bg, #1e293b);--hdr-fg:var(--hdr-fg, #f1f5f9);--stripe:var(--stripe, #f0f4ff);--accent:var(--accent, #2563eb);--total-bg:var(--total-bg, #e2e8f0);--font-size:var(--font-size, 12px)}
+#outlet .tbl-wrap{margin:0 auto;max-width:100%}
+#outlet table{border-collapse:collapse;font-size:var(--font-size);width:100%;min-width:0;table-layout:auto}
+#outlet thead th{padding:9px 8px;font-weight:600;color:var(--hdr-fg);font-size:calc(var(--font-size) - 1px);white-space:nowrap;background:var(--hdr-bg);text-align:left}
+#outlet thead th.num{text-align:right}
+#outlet tbody td{padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fff;font-size:var(--font-size)}
+#outlet tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+#outlet tbody tr:nth-child(even) td{background:var(--stripe)}
+#outlet tbody tr:last-child td{font-weight:700;background:var(--total-bg)}
+
+.embed-box{margin-top:18px;background:var(--hdr-bg);color:var(--hdr-fg);padding:14px 16px;font-size:12px}
+.embed-box code{background:rgba(255,255,255,.1);padding:4px 8px;display:inline-block;margin-top:6px;word-break:break-all;font-size:11px;max-width:100%}
+.embed-box .btn{margin-top:8px;width:auto}
+.copied{font-size:10px;color:#86efac;margin-left:8px;display:none}
+
+.row-count{font-size:11px;color:var(--faint);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>📊 CSV → Responsive Table Embed</h1>
+  <span class="ver">v1 · all in-browser, no upload</span>
+</div>
+
+<div class="main">
+  <!-- Left panel -->
+  <div class="panel">
+    <h3>📁 Data</h3>
+    <div class="drop-zone" id="drop" onclick="document.getElementById('fileInput').click()">
+      <span class="icon">📄</span>
+      <span id="dropLabel">Drop CSV / XLSX here<br>or click to browse</span>
+      <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.xlsx" onchange="loadFile(event)">
+    </div>
+
+    <h3>🎨 Colors</h3>
+    <label>Header background</label>
+    <input type="color" id="cHdrBg" value="#1e293b" onchange="applyColors()">
+    <label>Header text</label>
+    <input type="color" id="cHdrFg" value="#f1f5f9" onchange="applyColors()">
+    <label>Alternate row (stripe)</label>
+    <input type="color" id="cStripe" value="#f0f4ff" onchange="applyColors()">
+    <label>Accent</label>
+    <input type="color" id="cAccent" value="#2563eb" onchange="applyColors()">
+    <label>Total row</label>
+    <input type="color" id="cTotal" value="#e2e8f0" onchange="applyColors()">
+
+    <h3>🔤 Typography</h3>
+    <label>Font size: <span id="fsVal">12</span>px</label>
+    <input type="range" id="fontSize" min="9" max="18" value="12" oninput="applyFontSize()">
+
+    <h3>📐 Layout</h3>
+    <label>Last row style</label>
+    <select id="lastRowStyle" onchange="applyLastRow()">
+      <option value="bold">Bold (total)</option>
+      <option value="normal">Normal</option>
+      <option value="none">Same as others</option>
+    </select>
+  </div>
+
+  <!-- Right preview -->
+  <div class="preview">
+    <div class="empty" id="emptyState">
+      <span class="big-icon">📂</span>
+      Upload a CSV or XLSX file to see the preview
+    </div>
+    <div id="outlet" style="display:none"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+const drop = document.getElementById('drop');
+const dropLabel = document.getElementById('dropLabel');
+const outlet = document.getElementById('outlet');
+const emptyState = document.getElementById('emptyState');
+let currentData = null;
+let currentHeaders = null;
+
+// --- Drag & drop ---
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+drop.addEventListener('drop', e => {
+  e.preventDefault();
+  drop.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if(f) processFile(f);
+});
+
+// --- File load ---
+function loadFile(ev){ const f = ev.target.files[0]; if(f) processFile(f); }
+
+function processFile(file){
+  const name = file.name.toLowerCase();
+  if(name.endsWith('.csv') || name.endsWith('.tsv') || name.endsWith('.txt')){
+    Papa.parse(file, { header:false, skipEmptyLines:true, complete: handleData, error: e => alert('Parse error: '+e.message) });
+  } else if(name.endsWith('.xlsx')){
+    readXlsx(file);
+  } else {
+    alert('Unsupported format. Use CSV, TSV, or XLSX.');
+    return;
+  }
+  dropLabel.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+  drop.classList.add('has-file');
+}
+
+function readXlsx(file){
+  // minimal XLSX via SheetJS CDN
+  const s = document.createElement('script');
+  s.src = 'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js';
+  s.onload = () => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', blankrows:false});
+      handleData({data: rows.filter(r => r.some(c => c !== ''))});
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  document.head.appendChild(s);
+}
+
+function handleData(result){
+  currentData = result.data;
+  if(currentData.length===0){ alert('Empty file'); return; }
+  currentHeaders = currentData[0];
+  const body = currentData.slice(1).filter(r => r.some(c => String(c).trim()!==''));
+  renderTable(currentHeaders, body);
+}
+
+// --- Render ---
+function renderTable(headers, rows){
+  emptyState.style.display = 'none';
+  outlet.style.display = 'block';
+
+  const isNumeric = colIdx => rows.length>0 && rows.slice(0,5).every(r => {
+    const v = String(r[colIdx]||'').replace(/[,$%\s]/g,'').trim();
+    return v==='' || v==='—' || v==='-' || !isNaN(parseFloat(v));
+  });
+
+  let h = '<div class="tbl-wrap"><div class="tbl-scroll"><table>';
+  h += '<thead><tr>';
+  headers.forEach((th,i) => {
+    const cls = isNumeric(i) ? ' class="num"' : '';
+    h += '<th'+cls+'>'+esc(String(th||''))+'</th>';
+  });
+  h += '</tr></thead><tbody>';
+  rows.forEach((row,ri) => {
+    const isLast = ri === rows.length-1;
+    h += '<tr'+(isLast?' class="total-row"':'')+'>';
+    row.forEach((cell,ci) => {
+      const cls = isNumeric(ci) ? ' class="num"' : '';
+      h += '<td'+cls+'>'+esc(String(cell==null||cell===undefined?'':cell))+'</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div class="row-count">'+rows.length+' rows × '+headers.length+' columns</div>';
+  h += '<div class="embed-box">';
+  h += '<strong>Embed code</strong> — paste this into your page:<br>';
+  h += '<code id="embedCode">&lt;iframe src="'+location.href+'" width="100%" height="500" style="border:0"&gt;&lt;/iframe&gt;</code>';
+  h += ' <button class="btn" onclick="copyEmbed()">Copy</button><span class="copied" id="copiedMsg">Copied!</span>';
+  h += '</div></div>';
+  outlet.innerHTML = h;
+}
+
+// --- Live style overrides ---
+function applyColors(){
+  outlet.style.setProperty('--hdr-bg', document.getElementById('cHdrBg').value);
+  outlet.style.setProperty('--hdr-fg', document.getElementById('cHdrFg').value);
+  outlet.style.setProperty('--stripe', document.getElementById('cStripe').value);
+  outlet.style.setProperty('--accent', document.getElementById('cAccent').value);
+  outlet.style.setProperty('--total-bg', document.getElementById('cTotal').value);
+}
+function applyFontSize(){
+  const v = document.getElementById('fontSize').value;
+  document.getElementById('fsVal').textContent = v;
+  outlet.style.setProperty('--font-size', v+'px');
+}
+function applyLastRow(){
+  const v = document.getElementById('lastRowStyle').value;
+  const rows = outlet.querySelectorAll('tr.total-row td');
+  rows.forEach(td => {
+    if(v==='bold') td.style.fontWeight='700';
+    else if(v==='normal') td.style.fontWeight='400';
+    else td.style.fontWeight='';
+  });
+}
+
+function copyEmbed(){
+  const code = document.getElementById('embedCode');
+  navigator.clipboard.writeText(code.textContent).then(() => {
+    const m = document.getElementById('copiedMsg');
+    m.style.display = 'inline';
+    setTimeout(() => m.style.display = 'none', 2000);
+  });
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
