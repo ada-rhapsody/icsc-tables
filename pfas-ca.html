@@ -22,12 +22,14 @@ body{font-family:var(--font);color:var(--ink);background:#f8fafc;line-height:1.4
 .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
 .tbl-scroll::after{content:"";position:absolute;right:0;top:0;bottom:0;width:20px;pointer-events:none;background:linear-gradient(to right,transparent,rgba(0,0,0,.06))}
 
-table{border-collapse:collapse;font-size:11px;min-width:1200px;width:100%}
-thead th{text-align:left;padding:8px 6px;font-weight:600;color:var(--hdr-fg);font-size:10px;letter-spacing:.02em;white-space:nowrap;background:var(--hdr-bg);vertical-align:top}
+table{border-collapse:collapse;font-size:10.5px;min-width:0;width:100%;table-layout:fixed}
+thead th{text-align:center;padding:8px 4px;font-weight:600;color:var(--hdr-fg);font-size:9.5px;letter-spacing:.01em;white-space:normal;word-wrap:break-word;background:var(--hdr-bg);vertical-align:middle;max-width:90px;line-height:1.25}
+thead th.stub{text-align:left;max-width:60px}
 thead th.rot{writing-mode:vertical-rl;text-orientation:mixed;min-width:28px;padding:8px 4px;font-size:9px}
 thead th.num{text-align:center}
 thead th.sp{background:var(--total-bg);color:var(--total-fg)}
-tbody td{padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fff;font-size:11px}
+tbody td{padding:6px 4px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fff;font-size:10.5px;text-align:center}
+tbody td.stub{text-align:left}
 tbody td.num{text-align:center;font-variant-numeric:tabular-nums}
 tbody td.warn{color:#b45309;font-weight:500}
 tbody td.good{color:#166534}
@@ -58,59 +60,54 @@ tbody tr td:first-child{font-weight:600;color:var(--ink)}
   <p class="src">Units: µg/L (micrograms per liter) · WG = Groundwater · WP = Drinking Water</p>
   <div class="tbl-scroll">
     <table>
+      <colgroup>
+        <col style="width:6%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:8%"><col style="width:7%"><col style="width:7%"><col style="width:7.5%"><col style="width:7.5%"><col style="width:7.5%"><col style="width:7.5%">
+      </colgroup>
       <thead>
         <tr>
-          <th>Analyte</th><th>CAS RN</th>
-          <th class="num">Aq. Habitat Goal ESL – Fresh Water Ecotox</th>
-          <th class="num">Aq. Habitat Goal ESL – Saltwater Ecotox</th>
-          <th class="num">GW Direct Exposure Tapwater ESL – Cancer</th>
-          <th class="num">GW Direct Exposure Tapwater ESL – Noncancer</th>
-          <th class="num">GW Direct Exposure ESL – MCL Priority</th>
-          <th class="num">GW PFOS/PFOA Aq. Habitat Ecotox ESL</th>
-          <th class="num">GW PFOS/PFOA Direct Exposure ESL</th>
-          <th class="num">GW PFOS/PFOA Notification Level</th>
-          <th class="num">DDW PFAS Notification Level</th>
-          <th class="num">DDW PFAS Response Level</th>
-          <th class="num">Public Health Goal</th>
+          <th class="stub">Analyte</th><th class="stub">CAS RN</th>
+          <th>Aq. Habitat<br>Goal ESL<br>Fresh Water<br>Ecotox</th>
+          <th>Aq. Habitat<br>Goal ESL<br>Saltwater<br>Ecotox</th>
+          <th>GW Direct<br>Exposure<br>Tapwater ESL<br>Cancer</th>
+          <th>GW Direct<br>Exposure<br>Tapwater ESL<br>Noncancer</th>
+          <th>GW Direct<br>Exposure ESL<br>MCL Priority</th>
+          <th>GW PFOS/<br>PFOA Aq.<br>Habitat<br>Ecotox ESL</th>
+          <th>GW PFOS/<br>PFOA Direct<br>Exposure ESL</th>
+          <th>GW PFOS/<br>PFOA Notif.<br>Level</th>
+          <th>DDW PFAS<br>Notif.<br>Level</th>
+          <th>DDW PFAS<br>Response<br>Level</th>
+          <th>Public<br>Health<br>Goal</th>
         </tr>
-        <tr><th class="sp" style="font-size:9px">Dates →</th><th class="sp"></th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">May 2020</th><th class="sp num" style="font-size:9px">Mar 2021</th><th class="sp num" style="font-size:9px">Mar 2021</th><th class="sp num" style="font-size:9px">Oct 2022</th><th class="sp num" style="font-size:9px">Oct 2022</th><th class="sp num" style="font-size:9px">Oct 2022</th><th class="sp num" style="font-size:9px">Apr 2024</th></tr>
+        <tr><th class="sp stub" style="font-size:9px;color:var(--ink)">Dates</th><th class="sp stub"></th><th class="sp" style="font-size:9px">Feb<br>2020</th><th class="sp" style="font-size:9px">Feb<br>2020</th><th class="sp" style="font-size:9px">Feb<br>2020</th><th class="sp" style="font-size:9px">Feb<br>2020</th><th class="sp" style="font-size:9px">May<br>2020</th><th class="sp" style="font-size:9px">Mar<br>2021</th><th class="sp" style="font-size:9px">Mar<br>2021</th><th class="sp" style="font-size:9px">Oct<br>2022</th><th class="sp" style="font-size:9px">Oct<br>2022</th><th class="sp" style="font-size:9px">Oct<br>2022</th><th class="sp" style="font-size:9px">Apr<br>2024</th></tr>
       </thead>
       <tbody>
         <tr>
-          <td data-label="Analyte">PFBS</td><td data-label="CAS RN">375-73-5</td>
-          <td class="num" data-label="FW Ecotox">—</td><td class="num" data-label="SW Ecotox">—</td>
-          <td class="num" data-label="Cancer ESL">—</td><td class="num" data-label="Noncancer ESL">—</td>
-          <td class="num" data-label="MCL Priority">—</td>
-          <td class="num" data-label="Aq Eco ESL">—</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
-          <td class="num" data-label="DDW Notif Lvl">0.5</td><td class="num" data-label="DDW Resp Lvl">5</td>
-          <td class="num" data-label="PHG">—</td>
+          <td class="stub" data-label="Analyte">PFBS</td><td class="stub" data-label="CAS RN">375-73-5</td>
+          <td data-label="FW Ecotox">—</td><td data-label="SW Ecotox">—</td><td data-label="Cancer ESL">—</td><td data-label="Noncancer ESL">—</td><td data-label="MCL Priority">—</td>
+          <td data-label="Aq Eco ESL">—</td><td data-label="Direct Exp ESL">—</td><td data-label="GW Notif Lvl">—</td>
+          <td data-label="DDW Notif Lvl">0.5</td><td data-label="DDW Resp Lvl">5</td>
+          <td data-label="PHG">—</td>
         </tr>
         <tr>
-          <td data-label="Analyte">PFHxS</td><td data-label="CAS RN">355-46-4</td>
-          <td class="num" data-label="FW Ecotox">—</td><td class="num" data-label="SW Ecotox">—</td>
-          <td class="num" data-label="Cancer ESL">—</td><td class="num" data-label="Noncancer ESL">—</td>
-          <td class="num" data-label="MCL Priority">—</td>
-          <td class="num" data-label="Aq Eco ESL">—</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
-          <td class="num" data-label="DDW Notif Lvl">0.003</td><td class="num" data-label="DDW Resp Lvl">0.02</td>
-          <td class="num" data-label="PHG">—</td>
+          <td class="stub" data-label="Analyte">PFHxS</td><td class="stub" data-label="CAS RN">355-46-4</td>
+          <td data-label="FW Ecotox">—</td><td data-label="SW Ecotox">—</td><td data-label="Cancer ESL">—</td><td data-label="Noncancer ESL">—</td><td data-label="MCL Priority">—</td>
+          <td data-label="Aq Eco ESL">—</td><td data-label="Direct Exp ESL">—</td><td data-label="GW Notif Lvl">—</td>
+          <td data-label="DDW Notif Lvl">0.003</td><td data-label="DDW Resp Lvl">0.02</td>
+          <td data-label="PHG">—</td>
         </tr>
         <tr>
-          <td data-label="Analyte">PFOA</td><td data-label="CAS RN">335-67-1</td>
-          <td class="num" data-label="FW Ecotox">540</td><td class="num" data-label="SW Ecotox">540</td>
-          <td class="num" data-label="Cancer ESL">0.00054</td><td class="num" data-label="Noncancer ESL">0.009</td>
-          <td class="num" data-label="MCL Priority">0.0051</td>
-          <td class="num" data-label="Aq Eco ESL">—</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
-          <td class="num" data-label="DDW Notif Lvl">0.0051</td><td class="num" data-label="DDW Resp Lvl">0.01</td>
-          <td class="num" data-label="PHG">0.000007</td>
+          <td class="stub" data-label="Analyte">PFOA</td><td class="stub" data-label="CAS RN">335-67-1</td>
+          <td data-label="FW Ecotox">540</td><td data-label="SW Ecotox">540</td><td data-label="Cancer ESL">0.00054</td><td data-label="Noncancer ESL">0.009</td><td data-label="MCL Priority">0.0051</td>
+          <td data-label="Aq Eco ESL">—</td><td data-label="Direct Exp ESL">—</td><td data-label="GW Notif Lvl">—</td>
+          <td data-label="DDW Notif Lvl">0.0051</td><td data-label="DDW Resp Lvl">0.01</td>
+          <td data-label="PHG">0.000007</td>
         </tr>
         <tr>
-          <td data-label="Analyte">PFOS</td><td data-label="CAS RN">1763-23-1</td>
-          <td class="num" data-label="FW Ecotox">0.56</td><td class="num" data-label="SW Ecotox">2.6</td>
-          <td class="num" data-label="Cancer ESL">0.0017</td><td class="num" data-label="Noncancer ESL">0.036</td>
-          <td class="num" data-label="MCL Priority">0.0065</td>
-          <td class="num" data-label="Aq Eco ESL">4.4</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
-          <td class="num" data-label="DDW Notif Lvl">0.0065</td><td class="num" data-label="DDW Resp Lvl">0.04</td>
-          <td class="num" data-label="PHG">0.001</td>
+          <td class="stub" data-label="Analyte">PFOS</td><td class="stub" data-label="CAS RN">1763-23-1</td>
+          <td data-label="FW Ecotox">0.56</td><td data-label="SW Ecotox">2.6</td><td data-label="Cancer ESL">0.0017</td><td data-label="Noncancer ESL">0.036</td><td data-label="MCL Priority">0.0065</td>
+          <td data-label="Aq Eco ESL">4.4</td><td data-label="Direct Exp ESL">—</td><td data-label="GW Notif Lvl">—</td>
+          <td data-label="DDW Notif Lvl">0.0065</td><td data-label="DDW Resp Lvl">0.04</td>
+          <td data-label="PHG">0.001</td>
         </tr>
       </tbody>
     </table>
