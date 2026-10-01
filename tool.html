@@ -146,6 +146,43 @@ drop.addEventListener('drop', e => {
   if(f) processFile(f);
 });
 
+// --- Embed mode: strip UI, load from URL params ---
+const params = new URLSearchParams(location.search);
+const isEmbed = params.get('embed') !== null;
+if(isEmbed){
+  document.querySelector('.topbar').style.display = 'none';
+  document.querySelector('.main').style.gridTemplateColumns = '1fr';
+  document.querySelector('.panel').style.display = 'none';
+  document.querySelector('.preview').style.padding = '10px';
+  document.body.style.background = '#fff';
+  // load from localStorage if available (stored by the tool page)
+  const stored = localStorage.getItem('csv-tool-data');
+  if(stored){
+    try {
+      const d = JSON.parse(stored);
+      currentData = d.data;
+      currentHeaders = d.headers;
+      // restore colors
+      if(d.colors){
+        ['cHdrBg','cHdrFg','cStripe','cAccent','cTotal'].forEach(id => {
+          if(d.colors[id]) outlet.style.setProperty('--'+id.replace('c','').replace('Hdr','hdr').replace('Bg','-bg').replace('Fg','-fg').replace('Stripe','stripe').replace('Accent','accent').replace('Total','total-bg').toLowerCase(), d.colors[id]);
+        });
+        outlet.style.setProperty('--hdr-bg', d.colors.cHdrBg);
+        outlet.style.setProperty('--hdr-fg', d.colors.cHdrFg);
+        outlet.style.setProperty('--stripe', d.colors.cStripe);
+        outlet.style.setProperty('--accent', d.colors.cAccent);
+        outlet.style.setProperty('--total-bg', d.colors.cTotal);
+      }
+      if(d.fontSize) outlet.style.setProperty('--font-size', d.fontSize+'px');
+      const body = currentData.slice(1).filter(r => r.some(c => String(c).trim()!==''));
+      renderTableEmbed(currentHeaders, body, d.title, d.titleSize, d.titleSpacing, d.lastRow);
+    }catch(e){}
+  } else {
+    emptyState.style.display = 'block';
+    emptyState.innerHTML = '<span class="big-icon">📊</span>Configure the table in the tool first,<br>then embed this URL.';
+  }
+}
+
 // --- File load ---
 function loadFile(ev){ const f = ev.target.files[0]; if(f) processFile(f); }
 
@@ -161,6 +198,28 @@ function processFile(file){
   }
   dropLabel.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
   drop.classList.add('has-file');
+}
+
+// stash data to localStorage so embed mode can pick it up
+function stashToStorage(){
+  if(!currentData) return;
+  const cfg = {
+    data: currentData,
+    headers: currentHeaders,
+    colors: {
+      cHdrBg: document.getElementById('cHdrBg')?.value || '#1e293b',
+      cHdrFg: document.getElementById('cHdrFg')?.value || '#f1f5f9',
+      cStripe: document.getElementById('cStripe')?.value || '#f0f4ff',
+      cAccent: document.getElementById('cAccent')?.value || '#2563eb',
+      cTotal: document.getElementById('cTotal')?.value || '#e2e8f0'
+    },
+    fontSize: parseInt(document.getElementById('fontSize')?.value || 12),
+    title: document.getElementById('titleText')?.value || '',
+    titleSize: parseInt(document.getElementById('titleSize')?.value || 16),
+    titleSpacing: parseInt(document.getElementById('titleSpacing')?.value || 8),
+    lastRow: document.getElementById('lastRowStyle')?.value || 'bold'
+  };
+  localStorage.setItem('csv-tool-data', JSON.stringify(cfg));
 }
 
 function readXlsx(file){
@@ -225,10 +284,49 @@ function renderTable(headers, rows){
   h += '<div class="row-count">'+rows.length+' rows × '+headers.length+' columns</div>';
   h += '<div class="embed-box">';
   h += '<strong>Embed code</strong> — paste this into your page:<br>';
-  h += '<code id="embedCode">&lt;iframe src="'+location.href+'" width="100%" height="500" style="border:0"&gt;&lt;/iframe&gt;</code>';
+  const embedUrl = location.origin + location.pathname + '?embed';
+  h += '<code id="embedCode">&lt;iframe src="'+embedUrl+'" width="100%" height="500" style="border:0"&gt;&lt;/iframe&gt;</code>';
   h += ' <button class="btn" onclick="copyEmbed()">Copy</button><span class="copied" id="copiedMsg">Copied!</span>';
   h += '</div></div>';
   outlet.innerHTML = h;
+  stashToStorage();
+}
+
+// --- Embed-mode render: no UI chrome, just the table ---
+function renderTableEmbed(headers, rows, title, titleSize, titleSpacing, lastRow){
+  emptyState.style.display = 'none';
+  outlet.style.display = 'block';
+  const isNumeric = colIdx => rows.length>0 && rows.slice(0,5).every(r => {
+    const v = String(r[colIdx]||'').replace(/[,$%\s]/g,'').trim();
+    return v==='' || v==='—' || v==='-' || !isNaN(parseFloat(v));
+  });
+  let h = '<div class="tbl-wrap">';
+  if(title){
+    h += '<h2 class="tbl-title" style="font-size:'+titleSize+'px;margin-bottom:'+titleSpacing+'px">'+esc(title)+'</h2>';
+  }
+  h += '<div class="tbl-scroll"><table>';
+  h += '<thead><tr>';
+  headers.forEach((th,i) => {
+    const cls = isNumeric(i) ? ' class="num"' : '';
+    h += '<th'+cls+'>'+esc(String(th||''))+'</th>';
+  });
+  h += '</tr></thead><tbody>';
+  rows.forEach((row,ri) => {
+    const isLast = ri === rows.length-1;
+    h += '<tr'+(isLast?' class="total-row"':'')+'>';
+    row.forEach((cell,ci) => {
+      const cls = isNumeric(ci) ? ' class="num"' : '';
+      h += '<td'+cls+'>'+esc(String(cell==null||cell===undefined?'':cell))+'</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div></div>';
+  outlet.innerHTML = h;
+  if(lastRow==='bold'){
+    outlet.querySelectorAll('tr.total-row td').forEach(td => td.style.fontWeight='700');
+  } else if(lastRow==='normal'){
+    outlet.querySelectorAll('tr.total-row td').forEach(td => td.style.fontWeight='400');
+  }
 }
 
 // --- Live style overrides ---
@@ -238,11 +336,13 @@ function applyColors(){
   outlet.style.setProperty('--stripe', document.getElementById('cStripe').value);
   outlet.style.setProperty('--accent', document.getElementById('cAccent').value);
   outlet.style.setProperty('--total-bg', document.getElementById('cTotal').value);
+  stashToStorage();
 }
 function applyFontSize(){
   const v = document.getElementById('fontSize').value;
   document.getElementById('fsVal').textContent = v;
   outlet.style.setProperty('--font-size', v+'px');
+  stashToStorage();
 }
 function applyTitle(){
   const title = document.getElementById('titleText').value.trim();
@@ -252,6 +352,7 @@ function applyTitle(){
   document.getElementById('tspVal').textContent = spacing;
   const el = outlet.querySelector('.tbl-title');
   if(el){ el.style.fontSize = size+'px'; el.style.marginBottom = spacing+'px'; }
+  stashToStorage();
   if(currentData) renderTable(currentHeaders, currentData.slice(1).filter(r => r.some(c => String(c).trim()!=='')));
 }
 function applyLastRow(){
@@ -262,6 +363,7 @@ function applyLastRow(){
     else if(v==='normal') td.style.fontWeight='400';
     else td.style.fontWeight='';
   });
+  stashToStorage();
 }
 
 function copyEmbed(){
