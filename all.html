@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CSV → Table Tool</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr-bg:#1e293b; --hdr-fg:#f1f5f9; --stripe:#f0f4ff;
+  --line:#cbd5e1; --total-bg:#e2e8f0; --accent:#2563eb;
+  --ink:#0f172a; --soft:#475569; --faint:#64748b;
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font);color:var(--ink);background:#fff;line-height:1.4}
+
+/* ==== TOOL MODE ==== */
+#toolbar{display:none;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 12px;background:var(--hdr-bg);color:var(--hdr-fg);font-size:12px}
+#toolbar strong{font-size:13px}
+#panel{display:none;max-width:260px;background:#f8fafc;border-right:1px solid var(--line);padding:12px;overflow-y:auto}
+#preview{flex:1;padding:16px;overflow-y:auto}
+#layout{display:none}
+.tool-on #toolbar,.tool-on #layout,.tool-on #panel{display:flex}
+.tool-on #layout{display:flex;min-height:100vh}
+.tool-on #panel{display:block}
+
+@media(max-width:800px){
+  #layout{flex-direction:column}
+  #panel{max-width:none;border-right:0;border-bottom:1px solid var(--line)}
+}
+
+/* --- panel controls --- */
+#panel h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin:14px 0 5px}
+#panel h3:first-child{margin-top:0}
+#panel label{display:block;font-size:10px;font-weight:600;color:var(--soft);margin:8px 0 3px}
+#panel input[type=color]{width:100%;height:30px;border:1px solid var(--line);padding:1px;cursor:pointer}
+#panel input[type=range]{width:100%}
+#panel input[type=text],#panel select{width:100%;padding:5px 7px;font:11px var(--font);border:1px solid var(--line)}
+#panel .btn{display:block;width:100%;padding:8px;font:600 11px var(--font);border:0;background:var(--accent);color:#fff;cursor:pointer;margin-top:10px;text-align:center}
+
+/* --- drop zone --- */
+.drop-zone{border:2px dashed var(--line);padding:22px 14px;text-align:center;color:var(--faint);font-size:12px;cursor:pointer}
+.drop-zone:hover,.drop-zone.drag{background:var(--stripe);border-color:var(--accent)}
+.drop-zone input{display:none}
+.drop-zone.has-file{border-style:solid;border-color:var(--accent);background:var(--stripe);color:var(--ink)}
+
+/* --- table --- */
+.tbl-wrap{margin:0 auto;max-width:100%}
+.tbl-title{font-weight:700;color:var(--ink)}
+.tbl-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+thead th{padding:8px 7px;font-weight:600;text-align:left;white-space:nowrap}
+thead th.num{text-align:right}
+tbody td{padding:7px 7px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fff}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.total-row td{font-weight:700}
+
+/* --- embed box (tool mode) --- */
+.embed-box{margin-top:16px;background:var(--hdr-bg);color:var(--hdr-fg);padding:12px 14px;font-size:11px}
+.embed-box code{background:rgba(255,255,255,.1);padding:3px 6px;display:inline-block;margin-top:4px;word-break:break-all;font-size:10px}
+.embed-box button{font:600 10px var(--font);padding:4px 10px;background:var(--accent);color:#fff;border:0;cursor:pointer}
+
+/* ==== EMBED MODE ==== */
+body.embed-on{background:#fff}
+body.embed-on #toolbar,body.embed-on #panel{display:none}
+body.embed-on #layout{display:block}
+body.embed-on #preview{padding:10px}
+
+.empty{text-align:center;color:var(--faint);padding:60px 20px;font-size:14px}
+.copied{color:#86efac;margin-left:6px;font-size:10px;display:none}
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <strong>CSV → Table Tool</strong>
+  <span style="color:#94a3b8;font-size:11px">v2 · single-file · tool & embed</span>
+</div>
+
+<div id="layout">
+  <!-- PANEL -->
+  <div id="panel">
+    <h3>📁 Data</h3>
+    <div class="drop-zone" id="drop" onclick="document.getElementById('fileInput').click()">
+      <span id="dropLabel">Drop CSV / XLSX here<br>or click</span>
+      <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.xlsx" onchange="loadFile(event)">
+    </div>
+
+    <h3>🎨 Colors</h3>
+    <label>Header bg</label><input type="color" id="cHdrBg" value="#1e293b" onchange="sync()">
+    <label>Header text</label><input type="color" id="cHdrFg" value="#f1f5f9" onchange="sync()">
+    <label>Stripe</label><input type="color" id="cStripe" value="#f0f4ff" onchange="sync()">
+    <label>Total row</label><input type="color" id="cTotal" value="#e2e8f0" onchange="sync()">
+
+    <h3>🔤 Text</h3>
+    <label>Font size: <span id="fsVal">12</span>px</label>
+    <input type="range" id="fontSize" min="9" max="18" value="12" oninput="sync()">
+
+    <h3>📝 Title</h3>
+    <label>Title</label>
+    <input type="text" id="titleText" placeholder="Optional title" oninput="sync()">
+    <label>Title size: <span id="tsVal">16</span>px</label>
+    <input type="range" id="titleSize" min="11" max="36" value="16" oninput="sync()">
+    <label>Title spacing: <span id="tspVal">8</span>px</label>
+    <input type="range" id="titleSpacing" min="0" max="40" value="8" oninput="sync()">
+
+    <h3>📐 Layout</h3>
+    <label>Last row</label>
+    <select id="lastRowStyle" onchange="sync()">
+      <option value="bold">Bold (total)</option>
+      <option value="normal">Normal</option>
+      <option value="none">Same</option>
+    </select>
+  </div>
+
+  <!-- PREVIEW -->
+  <div id="preview">
+    <div class="empty" id="emptyState">📂 Upload a CSV or XLSX to preview</div>
+    <div id="outlet"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+// ======= DETECT MODE =======
+var isTool = location.search.indexOf('embed') === -1;
+document.body.className = isTool ? 'tool-on' : 'embed-on';
+
+var S = {
+  data: null, headers: null,
+  hdrBg:'#1e293b',hdrFg:'#f1f5f9',stripe:'#f0f4ff',totalBg:'#e2e8f0',
+  fontSize:12, title:'', titleSize:16, titleSpacing:8, lastRow:'bold'
+};
+
+// ======= EMBED MODE: read from URL hash =======
+if(!isTool){
+  try {
+    var raw = location.hash.slice(1);
+    if(raw){
+      var cfg = JSON.parse(decodeURIComponent(raw));
+      Object.assign(S, cfg);
+    } else {
+      // try localStorage fallback
+      var stored = localStorage.getItem('csv-tool-cfg');
+      if(stored) Object.assign(S, JSON.parse(stored));
+    }
+  } catch(e){}
+  if(S.data && S.headers){
+    renderTable(S.headers, S.data.slice(1).filter(function(r){ return r.some(function(c){ return String(c).trim()!==''; }); }));
+  } else {
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('emptyState').innerHTML = '📊 Open the tool, configure your table,<br>then use the embed URL.';
+  }
+}
+
+// ======= TOOL MODE =======
+var drop = document.getElementById('drop');
+if(drop){
+  drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave', function(){ drop.classList.remove('drag'); });
+  drop.addEventListener('drop', function(e){
+    e.preventDefault(); drop.classList.remove('drag');
+    var f = e.dataTransfer.files[0]; if(f) processFile(f);
+  });
+}
+
+function loadFile(ev){ var f = ev.target.files[0]; if(f) processFile(f); }
+
+function processFile(file){
+  var name = file.name.toLowerCase();
+  if(name.endsWith('.csv')||name.endsWith('.tsv')||name.endsWith('.txt')){
+    Papa.parse(file, {header:false, skipEmptyLines:true, complete: onData, error:function(e){ alert(e.message); }});
+  } else if(name.endsWith('.xlsx')){
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js';
+    s.onload = function(){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var wb = XLSX.read(e.target.result, {type:'array'});
+        var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:'', blankrows:false});
+        onData({data: rows.filter(function(r){ return r.some(function(c){ return c!==''; }); })});
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    document.head.appendChild(s);
+  } else { alert('Use CSV, TSV, or XLSX.'); return; }
+  document.getElementById('dropLabel').textContent = file.name + ' ('+(file.size/1024).toFixed(1)+' KB)';
+  drop.classList.add('has-file');
+}
+
+function onData(result){
+  S.data = result.data;
+  S.headers = S.data[0];
+  sync();
+}
+
+// ======= READ PANEL → S → render =======
+function sync(){
+  if(isTool){
+    S.hdrBg = document.getElementById('cHdrBg').value;
+    S.hdrFg = document.getElementById('cHdrFg').value;
+    S.stripe = document.getElementById('cStripe').value;
+    S.totalBg = document.getElementById('cTotal').value;
+    S.fontSize = parseInt(document.getElementById('fontSize').value);
+    S.title = document.getElementById('titleText').value;
+    S.titleSize = parseInt(document.getElementById('titleSize').value);
+    S.titleSpacing = parseInt(document.getElementById('titleSpacing').value);
+    S.lastRow = document.getElementById('lastRowStyle').value;
+
+    document.getElementById('fsVal').textContent = S.fontSize;
+    document.getElementById('tsVal').textContent = S.titleSize;
+    document.getElementById('tspVal').textContent = S.titleSpacing;
+  }
+
+  if(!S.data || !S.headers) return;
+  var rows = S.data.slice(1).filter(function(r){ return r.some(function(c){ return String(c).trim()!==''; }); });
+  renderTable(S.headers, rows);
+
+  // stash for embed
+  try { localStorage.setItem('csv-tool-cfg', JSON.stringify(S)); } catch(e){}
+}
+
+function renderTable(headers, rows){
+  document.getElementById('emptyState').style.display = 'none';
+  var out = document.getElementById('outlet');
+
+  var isNum = function(ci){
+    return rows.length>0 && rows.slice(0,5).every(function(r){
+      var v = String(r[ci]||'').replace(/[,$%\\s]/g,'').trim();
+      return v===''||v==='—'||v==='-'||!isNaN(parseFloat(v));
+    });
+  };
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  var fs = S.fontSize + 'px';
+  var h = '<div class="tbl-wrap">';
+  if(S.title) h += '<h2 class="tbl-title" style="font-size:'+S.titleSize+'px;margin-bottom:'+S.titleSpacing+'px">'+esc(S.title)+'</h2>';
+  h += '<div class="tbl-scroll"><table>';
+  h += '<thead><tr>';
+  headers.forEach(function(th,i){
+    h += '<th style="background:'+S.hdrBg+';color:'+S.hdrFg+';font-size:'+fs+'"'+(isNum(i)?' class="num"':'')+'>'+esc(th)+'</th>';
+  });
+  h += '</tr></thead><tbody>';
+  rows.forEach(function(row,ri){
+    var isLast = ri===rows.length-1;
+    h += '<tr'+(isLast?' class="total-row"':'')+'>';
+    row.forEach(function(cell,ci){
+      h += '<td style="font-size:'+fs+'"'+(isNum(ci)?' class="num"':'')+'>'+esc(cell==null?'':cell)+'</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+
+  if(isTool){
+    // embed box
+    var embedUrl = location.href.replace(/\?.*$/,'').replace(/#.*$/,'') + '?embed#' + encodeURIComponent(JSON.stringify(S));
+    h += '<div class="embed-box">';
+    h += '<strong>Embed code:</strong><br>';
+    h += '<code>'+esc('<iframe src="'+embedUrl+'" width="100%" height="500" style="border:0"></iframe>')+'</code><br>';
+    h += '<button onclick="copyEmbed(this,\\''+esc(embedUrl.replace(/'/g,'\\\\\\''))+'\')">Copy embed URL</button><span class="copied" style="display:none">Copied!</span>';
+    h += '</div>';
+  }
+  out.innerHTML = h;
+
+  // stripe + last row
+  var trs = out.querySelectorAll('tbody tr');
+  trs.forEach(function(tr,i){
+    if(i%2===1) tr.querySelectorAll('td').forEach(function(td){ td.style.background = S.stripe; });
+    if(i===trs.length-1){
+      tr.querySelectorAll('td').forEach(function(td){
+        td.style.background = S.totalBg;
+        if(S.lastRow==='bold') td.style.fontWeight='700';
+        else if(S.lastRow==='normal') td.style.fontWeight='400';
+      });
+    }
+  });
+}
+
+function copyEmbed(btn, url){
+  navigator.clipboard.writeText(url).then(function(){
+    var m = btn.nextElementSibling;
+    m.style.display = 'inline';
+    setTimeout(function(){ m.style.display = 'none'; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
