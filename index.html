@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ICSC Data Tables — Responsive Embed</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a2e; --soft:#4a4a5e; --faint:#8a8a9e;
+  --line:#d4d4de; --stripe:#f4f4f8; --accent:#1a56db;
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font);color:var(--ink);background:#fff;line-height:1.4;padding:20px}
+.tbl-wrap{margin:0 auto 40px;max-width:1100px}
+.tbl-wrap h2{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.tbl-wrap .src{font-size:11px;color:var(--faint);margin-bottom:12px}
+
+/* scroll shadow on narrow screens */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
+.tbl-scroll::after{content:"";position:absolute;right:0;top:0;bottom:0;width:20px;pointer-events:none;background:linear-gradient(to right,transparent,rgba(0,0,0,.06))}
+
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
+thead th{text-align:left;padding:8px 6px;font-weight:600;color:var(--soft);font-size:11px;border-bottom:2px solid var(--line);white-space:nowrap}
+thead th.num{text-align:right}
+thead th.group{text-align:center;border-bottom:1px solid var(--line)}
+tbody td{padding:8px 6px;border-bottom:1px solid var(--line-soft, #e8e8ee);white-space:nowrap}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody td.ctr{text-align:center}
+tbody tr:nth-child(even){background:var(--stripe)}
+tbody tr.country td:first-child{font-weight:600}
+tbody tr.total{border-top:2px solid var(--ink);font-weight:700}
+tbody tr.total td{background:var(--stripe)}
+
+/* Mobile card view — kicks in below 700px */
+@media(max-width:699px){
+  .tbl-scroll::after{display:none}
+  table,tbody,tr,td,thead{display:block;min-width:0}
+  thead{display:none}
+  tr{margin-bottom:12px;border:1px solid var(--line);padding:8px;border-radius:0;background:#fff}
+  tr:nth-child(even){background:var(--stripe)}
+  td{display:flex;justify-content:space-between;padding:4px 0;border:0;white-space:normal;text-align:right}
+  td::before{content:attr(data-label);font-weight:600;color:var(--soft);margin-right:12px;flex-shrink:0;text-align:left}
+  td.num{text-align:right}
+  tr.total td{background:transparent}
+  tr.total td::before{font-weight:800;color:var(--ink)}
+}
+
+/* print friendly */
+@media print{
+  body{background:white;padding:0}
+  .tbl-wrap{break-inside:avoid;margin-bottom:20px}
+  table{font-size:9pt}
+}
+</style>
+</head>
+<body>
+
+<!-- TABLE 1: Imports of organic food by country -->
+<div class="tbl-wrap">
+  <h2>Imports of organic food into Slovakia by country of origin</h2>
+  <p class="src">Source: Ministry of Agriculture SK · Values in EUR millions</p>
+  <div class="tbl-scroll">
+    <table>
+      <thead>
+        <tr><th>Country of origin</th><th class="num">2020</th><th class="num">2021</th><th class="num">2022</th><th class="num">2023</th><th class="num">2023 share</th><th class="num">2024</th><th class="num">2024 share</th><th class="num">YoY ±%</th></tr>
+      </thead>
+      <tbody>
+        <tr class="country"><td data-label="Country">Austria</td><td class="num" data-label="2020">48,418,710</td><td class="num" data-label="2021">64,481,745</td><td class="num" data-label="2022">97,995,940</td><td class="num" data-label="2023">100,753,848</td><td class="num" data-label="2023 share">43.7%</td><td class="num" data-label="2024">114,483,401</td><td class="num" data-label="2024 share">44.8%</td><td class="num" data-label="YoY">+13.6</td></tr>
+        <tr class="country"><td data-label="Country">Czech Republic</td><td class="num" data-label="2020">6,472,914</td><td class="num" data-label="2021">6,269,903</td><td class="num" data-label="2022">12,403,461</td><td class="num" data-label="2023">10,338,577</td><td class="num" data-label="2023 share">4.5%</td><td class="num" data-label="2024">11,536,736</td><td class="num" data-label="2024 share">4.5%</td><td class="num" data-label="YoY">+11.6</td></tr>
+        <tr class="country"><td data-label="Country">Germany</td><td class="num" data-label="2020">7,536,005</td><td class="num" data-label="2021">8,135,653</td><td class="num" data-label="2022">11,415,127</td><td class="num" data-label="2023">9,868,514</td><td class="num" data-label="2023 share">4.3%</td><td class="num" data-label="2024">10,011,371</td><td class="num" data-label="2024 share">3.9%</td><td class="num" data-label="YoY">+1.4</td></tr>
+        <tr class="country"><td data-label="Country">Poland</td><td class="num" data-label="2020">7,808,602</td><td class="num" data-label="2021">7,669,346</td><td class="num" data-label="2022">12,514,576</td><td class="num" data-label="2023">8,809,366</td><td class="num" data-label="2023 share">3.8%</td><td class="num" data-label="2024">8,361,238</td><td class="num" data-label="2024 share">3.3%</td><td class="num" data-label="YoY">−5.1</td></tr>
+        <tr class="country"><td data-label="Country">Italy</td><td class="num" data-label="2020">4,253,641</td><td class="num" data-label="2021">4,421,614</td><td class="num" data-label="2022">7,865,681</td><td class="num" data-label="2023">7,018,569</td><td class="num" data-label="2023 share">3.0%</td><td class="num" data-label="2024">7,808,611</td><td class="num" data-label="2024 share">3.1%</td><td class="num" data-label="YoY">+11.3</td></tr>
+        <tr class="country"><td data-label="Country">Netherlands</td><td class="num" data-label="2020">1,702,772</td><td class="num" data-label="2021">2,349,109</td><td class="num" data-label="2022">5,364,460</td><td class="num" data-label="2023">6,320,726</td><td class="num" data-label="2023 share">2.7%</td><td class="num" data-label="2024">5,889,041</td><td class="num" data-label="2024 share">2.3%</td><td class="num" data-label="YoY">−6.8</td></tr>
+        <tr class="country"><td data-label="Country">Ukraine</td><td class="num" data-label="2020">1,673,920</td><td class="num" data-label="2021">2,788,426</td><td class="num" data-label="2022">3,359,006</td><td class="num" data-label="2023">4,655,726</td><td class="num" data-label="2023 share">2.0%</td><td class="num" data-label="2024">5,285,046</td><td class="num" data-label="2024 share">2.1%</td><td class="num" data-label="YoY">+13.5</td></tr>
+        <tr class="country"><td data-label="Country">Hungary</td><td class="num" data-label="2020">1,134,148</td><td class="num" data-label="2021">2,353,655</td><td class="num" data-label="2022">1,442,993</td><td class="num" data-label="2023">2,553,384</td><td class="num" data-label="2023 share">1.1%</td><td class="num" data-label="2024">3,000,571</td><td class="num" data-label="2024 share">1.2%</td><td class="num" data-label="YoY">+17.5</td></tr>
+        <tr class="country"><td data-label="Country">Croatia</td><td class="num" data-label="2020">446,179</td><td class="num" data-label="2021">566,361</td><td class="num" data-label="2022">1,302,613</td><td class="num" data-label="2023">1,337,321</td><td class="num" data-label="2023 share">0.6%</td><td class="num" data-label="2024">1,625,881</td><td class="num" data-label="2024 share">0.6%</td><td class="num" data-label="YoY">+21.6</td></tr>
+        <tr class="country"><td data-label="Country">Spain</td><td class="num" data-label="2020">895,614</td><td class="num" data-label="2021">1,032,598</td><td class="num" data-label="2022">1,078,310</td><td class="num" data-label="2023">1,210,499</td><td class="num" data-label="2023 share">0.5%</td><td class="num" data-label="2024">1,234,071</td><td class="num" data-label="2024 share">0.5%</td><td class="num" data-label="YoY">+1.9</td></tr>
+        <tr class="country"><td data-label="Country">France</td><td class="num" data-label="2020">648,909</td><td class="num" data-label="2021">693,055</td><td class="num" data-label="2022">706,800</td><td class="num" data-label="2023">710,003</td><td class="num" data-label="2023 share">0.3%</td><td class="num" data-label="2024">876,549</td><td class="num" data-label="2024 share">0.3%</td><td class="num" data-label="YoY">+23.5</td></tr>
+        <tr class="country"><td data-label="Country">Belgium</td><td class="num" data-label="2020">483,942</td><td class="num" data-label="2021">558,235</td><td class="num" data-label="2022">689,002</td><td class="num" data-label="2023">647,900</td><td class="num" data-label="2023 share">0.3%</td><td class="num" data-label="2024">598,212</td><td class="num" data-label="2024 share">0.2%</td><td class="num" data-label="YoY">−7.7</td></tr>
+        <tr class="country"><td data-label="Country">Slovenia</td><td class="num" data-label="2020">12,349</td><td class="num" data-label="2021">72,487</td><td class="num" data-label="2022">208,517</td><td class="num" data-label="2023">330,380</td><td class="num" data-label="2023 share">0.1%</td><td class="num" data-label="2024">469,357</td><td class="num" data-label="2024 share">0.2%</td><td class="num" data-label="YoY">+42.1</td></tr>
+        <tr class="country"><td data-label="Country">Denmark</td><td class="num" data-label="2020">74,861</td><td class="num" data-label="2021">115,750</td><td class="num" data-label="2022">196,103</td><td class="num" data-label="2023">220,600</td><td class="num" data-label="2023 share">0.1%</td><td class="num" data-label="2024">214,565</td><td class="num" data-label="2024 share">0.1%</td><td class="num" data-label="YoY">−2.7</td></tr>
+        <tr class="country"><td data-label="Country">Greece</td><td class="num" data-label="2020">25,487</td><td class="num" data-label="2021">87,503</td><td class="num" data-label="2022">156,233</td><td class="num" data-label="2023">177,000</td><td class="num" data-label="2023 share">0.1%</td><td class="num" data-label="2024">148,078</td><td class="num" data-label="2024 share">0.1%</td><td class="num" data-label="YoY">−16.3</td></tr>
+        <tr class="country"><td data-label="Country">Other</td><td class="num" data-label="2020">7,551,085</td><td class="num" data-label="2021">7,563,179</td><td class="num" data-label="2022">13,117,319</td><td class="num" data-label="2023">11,672,336</td><td class="num" data-label="2023 share">5.1%</td><td class="num" data-label="2024">13,320,923</td><td class="num" data-label="2024 share">5.2%</td><td class="num" data-label="YoY">+14.1</td></tr>
+        <tr class="total"><td data-label="Country">TOTAL</td><td class="num" data-label="2020">84,476,532</td><td class="num" data-label="2021">101,256,961</td><td class="num" data-label="2022">144,914,212</td><td class="num" data-label="2023">158,789,224</td><td class="num" data-label="2023 share">100.0%</td><td class="num" data-label="2024">185,285,352</td><td class="num" data-label="2024 share">100.0%</td><td class="num" data-label="YoY">+16.7</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TABLE 2: Destination of sales / top destinations -->
+<div class="tbl-wrap">
+  <h2>Destination of organic food sales — top destinations by broker region</h2>
+  <p class="src">Source: Ministry of Agriculture SK · Sales in EUR millions</p>
+  <div class="tbl-scroll">
+    <table>
+      <thead>
+        <tr><th>Destination</th><th class="num">2020</th><th class="num">2021</th><th class="num">2022</th><th class="num">2023</th><th class="num">2023 share</th><th class="num">2024</th><th class="num">2024 share</th><th class="num">YoY ±%</th></tr>
+      </thead>
+      <tbody>
+        <tr class="country"><td data-label="Destination">Germany</td><td class="num" data-label="2020">14,604,216</td><td class="num" data-label="2021">22,406,826</td><td class="num" data-label="2022">30,742,615</td><td class="num" data-label="2023">36,257,839</td><td class="num" data-label="2023 share">29.5%</td><td class="num" data-label="2024">39,587,097</td><td class="num" data-label="2024 share">28.7%</td><td class="num" data-label="YoY">+9.2</td></tr>
+        <tr class="country"><td data-label="Destination">Czech Republic</td><td class="num" data-label="2020">16,660,171</td><td class="num" data-label="2021">19,122,278</td><td class="num" data-label="2022">20,566,774</td><td class="num" data-label="2023">25,361,479</td><td class="num" data-label="2023 share">20.7%</td><td class="num" data-label="2024">28,023,888</td><td class="num" data-label="2024 share">20.3%</td><td class="num" data-label="YoY">+10.5</td></tr>
+        <tr class="country"><td data-label="Destination">Domestic (SK)</td><td class="num" data-label="2020">9,470,411</td><td class="num" data-label="2021">10,229,362</td><td class="num" data-label="2022">12,397,981</td><td class="num" data-label="2023">14,186,865</td><td class="num" data-label="2023 share">11.6%</td><td class="num" data-label="2024">15,091,898</td><td class="num" data-label="2024 share">10.9%</td><td class="num" data-label="YoY">+6.4</td></tr>
+        <tr class="country"><td data-label="Destination">Austria</td><td class="num" data-label="2020">4,536,427</td><td class="num" data-label="2021">7,944,182</td><td class="num" data-label="2022">9,613,653</td><td class="num" data-label="2023">11,015,958</td><td class="num" data-label="2023 share">9.0%</td><td class="num" data-label="2024">13,038,867</td><td class="num" data-label="2024 share">9.5%</td><td class="num" data-label="YoY">+18.4</td></tr>
+        <tr class="country"><td data-label="Destination">Poland</td><td class="num" data-label="2020">5,920,307</td><td class="num" data-label="2021">6,930,558</td><td class="num" data-label="2022">8,252,004</td><td class="num" data-label="2023">10,361,667</td><td class="num" data-label="2023 share">8.4%</td><td class="num" data-label="2024">11,640,534</td><td class="num" data-label="2024 share">8.4%</td><td class="num" data-label="YoY">+12.3</td></tr>
+        <tr class="country"><td data-label="Destination">Netherlands</td><td class="num" data-label="2020">1,185,110</td><td class="num" data-label="2021">1,715,509</td><td class="num" data-label="2022">3,354,058</td><td class="num" data-label="2023">4,643,720</td><td class="num" data-label="2023 share">3.8%</td><td class="num" data-label="2024">5,814,610</td><td class="num" data-label="2024 share">4.2%</td><td class="num" data-label="YoY">+25.2</td></tr>
+        <tr class="country"><td data-label="Destination">Hungary</td><td class="num" data-label="2020">1,224,830</td><td class="num" data-label="2021">1,977,498</td><td class="num" data-label="2022">2,464,750</td><td class="num" data-label="2023">3,454,881</td><td class="num" data-label="2023 share">2.8%</td><td class="num" data-label="2024">4,025,706</td><td class="num" data-label="2024 share">2.9%</td><td class="num" data-label="YoY">+16.5</td></tr>
+        <tr class="country"><td data-label="Destination">Croatia</td><td class="num" data-label="2020">684,011</td><td class="num" data-label="2021">907,443</td><td class="num" data-label="2022">2,014,820</td><td class="num" data-label="2023">2,103,036</td><td class="num" data-label="2023 share">1.7%</td><td class="num" data-label="2024">3,001,899</td><td class="num" data-label="2024 share">2.2%</td><td class="num" data-label="YoY">+42.7</td></tr>
+        <tr class="country"><td data-label="Destination">France</td><td class="num" data-label="2020">478,056</td><td class="num" data-label="2021">702,979</td><td class="num" data-label="2022">1,023,774</td><td class="num" data-label="2023">1,887,670</td><td class="num" data-label="2023 share">1.5%</td><td class="num" data-label="2024">2,336,071</td><td class="num" data-label="2024 share">1.7%</td><td class="num" data-label="YoY">+23.8</td></tr>
+        <tr class="country"><td data-label="Destination">Italy</td><td class="num" data-label="2020">514,145</td><td class="num" data-label="2021">568,337</td><td class="num" data-label="2022">1,062,977</td><td class="num" data-label="2023">1,422,968</td><td class="num" data-label="2023 share">1.2%</td><td class="num" data-label="2024">1,560,491</td><td class="num" data-label="2024 share">1.1%</td><td class="num" data-label="YoY">+9.7</td></tr>
+        <tr class="country"><td data-label="Destination">Spain</td><td class="num" data-label="2020">143,755</td><td class="num" data-label="2021">205,291</td><td class="num" data-label="2022">296,169</td><td class="num" data-label="2023">430,600</td><td class="num" data-label="2023 share">0.4%</td><td class="num" data-label="2024">635,345</td><td class="num" data-label="2024 share">0.5%</td><td class="num" data-label="YoY">+47.6</td></tr>
+        <tr class="country"><td data-label="Destination">Sweden</td><td class="num" data-label="2020">218,891</td><td class="num" data-label="2021">311,343</td><td class="num" data-label="2022">387,554</td><td class="num" data-label="2023">423,709</td><td class="num" data-label="2023 share">0.3%</td><td class="num" data-label="2024">467,830</td><td class="num" data-label="2024 share">0.3%</td><td class="num" data-label="YoY">+10.4</td></tr>
+        <tr class="country"><td data-label="Destination">Romania</td><td class="num" data-label="2020">192,336</td><td class="num" data-label="2021">262,112</td><td class="num" data-label="2022">301,454</td><td class="num" data-label="2023">328,065</td><td class="num" data-label="2023 share">0.3%</td><td class="num" data-label="2024">412,450</td><td class="num" data-label="2024 share">0.3%</td><td class="num" data-label="YoY">+25.7</td></tr>
+        <tr class="country"><td data-label="Destination">Kazakhstan</td><td class="num" data-label="2020">16,133</td><td class="num" data-label="2021">56,894</td><td class="num" data-label="2022">152,430</td><td class="num" data-label="2023">198,740</td><td class="num" data-label="2023 share">0.2%</td><td class="num" data-label="2024">393,377</td><td class="num" data-label="2024 share">0.3%</td><td class="num" data-label="YoY">+97.9</td></tr>
+        <tr class="country"><td data-label="Destination">Other</td><td class="num" data-label="2020">10,281,389</td><td class="num" data-label="2021">10,670,541</td><td class="num" data-label="2022">13,774,356</td><td class="num" data-label="2023">14,860,269</td><td class="num" data-label="2023 share">12.1%</td><td class="num" data-label="2024">16,342,475</td><td class="num" data-label="2024 share">11.9%</td><td class="num" data-label="YoY">+10.0</td></tr>
+        <tr class="total"><td data-label="Destination">TOTAL</td><td class="num" data-label="2020">65,526,638</td><td class="num" data-label="2021">83,313,272</td><td class="num" data-label="2022">106,504,816</td><td class="num" data-label="2023">126,060,087</td><td class="num" data-label="2023 share">100.0%</td><td class="num" data-label="2024">137,562,390</td><td class="num" data-label="2024 share">100.0%</td><td class="num" data-label="YoY">+9.1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Embed instructions -->
+<div style="max-width:1100px;margin:0 auto;padding:16px;background:#f4f4f8;font-size:12px;color:#666;margin-top:32px">
+  <strong>Embed code</strong> — copy this into your page:<br>
+  <code style="background:#e8e8ee;padding:4px 8px;display:inline-block;margin-top:4px;word-break:break-all">
+    &lt;iframe src="https://icsc-tables.vercel.app" width="100%" height="800" style="border:0"&gt;&lt;/iframe&gt;
+  </code>
+</div>
+
+</body>
+</html>
