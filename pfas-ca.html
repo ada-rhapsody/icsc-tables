@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PFAS California Regulatory Standards — Responsive Table</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f172a; --soft:#475569; --faint:#64748b;
+  --line:#cbd5e1; --stripe:#f0f4ff; --accent:#2563eb;
+  --hdr-bg:#1e293b; --hdr-fg:#f1f5f9;
+  --total-bg:#e2e8f0; --total-fg:#0f172a;
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font);color:var(--ink);background:#f8fafc;line-height:1.4;padding:20px}
+
+.tbl-wrap{margin:0 auto 40px;max-width:100%}
+.tbl-wrap h2{font-size:15px;font-weight:700;margin:0 0 6px;color:var(--hdr-bg)}
+.tbl-wrap .src{font-size:11px;color:var(--faint);margin-bottom:14px;text-transform:uppercase;letter-spacing:.03em}
+
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
+.tbl-scroll::after{content:"";position:absolute;right:0;top:0;bottom:0;width:20px;pointer-events:none;background:linear-gradient(to right,transparent,rgba(0,0,0,.06))}
+
+table{border-collapse:collapse;font-size:11px;min-width:1200px;width:100%}
+thead th{text-align:left;padding:8px 6px;font-weight:600;color:var(--hdr-fg);font-size:10px;letter-spacing:.02em;white-space:nowrap;background:var(--hdr-bg);vertical-align:top}
+thead th.rot{writing-mode:vertical-rl;text-orientation:mixed;min-width:28px;padding:8px 4px;font-size:9px}
+thead th.num{text-align:center}
+thead th.sp{background:var(--total-bg);color:var(--total-fg)}
+tbody td{padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fff;font-size:11px}
+tbody td.num{text-align:center;font-variant-numeric:tabular-nums}
+tbody td.warn{color:#b45309;font-weight:500}
+tbody td.good{color:#166534}
+tbody tr:nth-child(even) td{background:var(--stripe)}
+tbody tr td:first-child{font-weight:600;color:var(--ink)}
+
+.footnotes{max-width:1200px;margin:16px auto 0;font-size:10px;color:var(--faint);line-height:1.6}
+
+@media(max-width:699px){
+  table,tbody,tr,td,thead{display:block;min-width:0}
+  thead{display:none}
+  tr{margin-bottom:10px;border:1px solid var(--line);padding:6px;background:#fff}
+  tr:nth-child(even){background:var(--stripe)}
+  td{display:flex;justify-content:space-between;padding:3px 0;border:0;white-space:normal;text-align:right;font-size:11px}
+  td::before{content:attr(data-label);font-weight:600;color:var(--soft);margin-right:10px;flex-shrink:0;text-align:left;font-size:10px}
+  td.num{text-align:right}
+}
+@media print{
+  body{background:white;padding:0}
+  table{font-size:8pt}
+}
+</style>
+</head>
+<body>
+
+<div class="tbl-wrap">
+  <h2>Location: California (CA) — PFAS Regulatory &amp; Health Guidance Standards</h2>
+  <p class="src">Units: µg/L (micrograms per liter) · WG = Groundwater · WP = Drinking Water</p>
+  <div class="tbl-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Analyte</th><th>CAS RN</th>
+          <th class="num">Aq. Habitat Goal ESL – Fresh Water Ecotox</th>
+          <th class="num">Aq. Habitat Goal ESL – Saltwater Ecotox</th>
+          <th class="num">GW Direct Exposure Tapwater ESL – Cancer</th>
+          <th class="num">GW Direct Exposure Tapwater ESL – Noncancer</th>
+          <th class="num">GW Direct Exposure ESL – MCL Priority</th>
+          <th class="num">GW PFOS/PFOA Aq. Habitat Ecotox ESL</th>
+          <th class="num">GW PFOS/PFOA Direct Exposure ESL</th>
+          <th class="num">GW PFOS/PFOA Notification Level</th>
+          <th class="num">DDW PFAS Notification Level</th>
+          <th class="num">DDW PFAS Response Level</th>
+          <th class="num">Public Health Goal</th>
+        </tr>
+        <tr><th class="sp" style="font-size:9px">Dates →</th><th class="sp"></th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">Feb 2020</th><th class="sp num" style="font-size:9px">May 2020</th><th class="sp num" style="font-size:9px">Mar 2021</th><th class="sp num" style="font-size:9px">Mar 2021</th><th class="sp num" style="font-size:9px">Oct 2022</th><th class="sp num" style="font-size:9px">Oct 2022</th><th class="sp num" style="font-size:9px">Oct 2022</th><th class="sp num" style="font-size:9px">Apr 2024</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Analyte">PFBS</td><td data-label="CAS RN">375-73-5</td>
+          <td class="num" data-label="FW Ecotox">—</td><td class="num" data-label="SW Ecotox">—</td>
+          <td class="num" data-label="Cancer ESL">—</td><td class="num" data-label="Noncancer ESL">—</td>
+          <td class="num" data-label="MCL Priority">—</td>
+          <td class="num" data-label="Aq Eco ESL">—</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
+          <td class="num" data-label="DDW Notif Lvl">0.5</td><td class="num" data-label="DDW Resp Lvl">5</td>
+          <td class="num" data-label="PHG">—</td>
+        </tr>
+        <tr>
+          <td data-label="Analyte">PFHxS</td><td data-label="CAS RN">355-46-4</td>
+          <td class="num" data-label="FW Ecotox">—</td><td class="num" data-label="SW Ecotox">—</td>
+          <td class="num" data-label="Cancer ESL">—</td><td class="num" data-label="Noncancer ESL">—</td>
+          <td class="num" data-label="MCL Priority">—</td>
+          <td class="num" data-label="Aq Eco ESL">—</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
+          <td class="num" data-label="DDW Notif Lvl">0.003</td><td class="num" data-label="DDW Resp Lvl">0.02</td>
+          <td class="num" data-label="PHG">—</td>
+        </tr>
+        <tr>
+          <td data-label="Analyte">PFOA</td><td data-label="CAS RN">335-67-1</td>
+          <td class="num" data-label="FW Ecotox">540</td><td class="num" data-label="SW Ecotox">540</td>
+          <td class="num" data-label="Cancer ESL">0.00054</td><td class="num" data-label="Noncancer ESL">0.009</td>
+          <td class="num" data-label="MCL Priority">0.0051</td>
+          <td class="num" data-label="Aq Eco ESL">—</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
+          <td class="num" data-label="DDW Notif Lvl">0.0051</td><td class="num" data-label="DDW Resp Lvl">0.01</td>
+          <td class="num" data-label="PHG">0.000007</td>
+        </tr>
+        <tr>
+          <td data-label="Analyte">PFOS</td><td data-label="CAS RN">1763-23-1</td>
+          <td class="num" data-label="FW Ecotox">0.56</td><td class="num" data-label="SW Ecotox">2.6</td>
+          <td class="num" data-label="Cancer ESL">0.0017</td><td class="num" data-label="Noncancer ESL">0.036</td>
+          <td class="num" data-label="MCL Priority">0.0065</td>
+          <td class="num" data-label="Aq Eco ESL">4.4</td><td class="num" data-label="Direct Exp ESL">—</td><td class="num" data-label="GW Notif Lvl">—</td>
+          <td class="num" data-label="DDW Notif Lvl">0.0065</td><td class="num" data-label="DDW Resp Lvl">0.04</td>
+          <td class="num" data-label="PHG">0.001</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="footnotes">
+    <strong>WG</strong> = Groundwater &nbsp;|&nbsp; <strong>WP</strong> = Drinking Water &nbsp;|&nbsp; <strong>ESL</strong> = Environmental Screening Level &nbsp;|&nbsp; <strong>DDW</strong> = Division of Drinking Water &nbsp;|&nbsp; <strong>PHG</strong> = Public Health Goal<br>
+    "—" = Not Promulgated &nbsp;|&nbsp; PHG values marked "Proposed" (Apr 2024)
+  </div>
+</div>
+
+<!-- Embed instructions -->
+<div style="max-width:1200px;margin:0 auto;padding:16px;background:var(--hdr-bg);font-size:12px;color:var(--hdr-fg);margin-top:32px">
+  <strong>Embed code</strong> — copy this into your page:<br>
+  <code style="background:rgba(255,255,255,.1);padding:4px 8px;display:inline-block;margin-top:4px;word-break:break-all">
+    &lt;iframe src="https://icsc-tables.vercel.app/pfas-ca.html" width="100%" height="420" style="border:0"&gt;&lt;/iframe&gt;
+  </code>
+</div>
+
+</body>
+</html>
